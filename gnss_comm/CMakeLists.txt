@@ -5,6 +5,9 @@ find_package(rclpy REQUIRED)
 find_package(gnss_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(ament_cmake REQUIRED)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+find_package(Eigen3 REQUIRED)
+find_package(Glog REQUIRED)
 
 set(INCLUDE_DIRS include ${rclpy_INCLUDE_DIRS} ${gnss_interfaces_INCLUDE_DIRS}
   ${rclcpp_INCLUDE_DIRS} ${ament_cmake_INCLUDE_DIRS})
@@ -16,17 +19,13 @@ set(LIBRARY_DIRS ${rclpy_LIBRARY_DIRS} ${gnss_interfaces_LIBRARY_DIRS}
 link_directories(${LIBRARY_DIRS})
 
 set(LIBS ${rclpy_LIBRARIES} ${gnss_interfaces_LIBRARIES} ${rclcpp_LIBRARIES}
-  ${ament_cmake_LIBRARIES})
-
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-find_package(Eigen3 REQUIRED)
-find_package(Glog REQUIRED)
+  ${ament_cmake_LIBRARIES} ${GLOG_LIBRARIES})
 
 file(GLOB_RECURSE source_files ${PROJECT_SOURCE_DIR}/src/*.cpp)
 add_library(${PROJECT_NAME} ${source_files})
-target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME})
+target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR} ${GLOG_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME})
 
-target_link_libraries(${PROJECT_NAME} ${LIBS} ${GLOG_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME}

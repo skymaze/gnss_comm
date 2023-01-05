@@ -10,7 +10,7 @@ The *gnss_comm* package contains basic definitions and utility functions for GNS
 This package requires some features of C++11.
 
 ### 1.2 ROS
-This package is developed under [ROS Kinetic](http://wiki.ros.org/kinetic) environment.
+This package is developed under [ROS2 Humble](https://docs.ros.org/en/humble/index.html) environment.
 
 ### 1.3 Eigen
 Our code uses [Eigen 3.3.3](https://gitlab.com/libeigen/eigen/-/archive/3.3.3/eigen-3.3.3.zip) for matrix manipulation. After downloading and unzipping the Eigen source code package, you may install it with the following commands:
@@ -32,26 +32,20 @@ If you are on other OS or just want to build it from source, please follow [thes
 
 
 ## 2. Build gnss_comm library
-Clone the repository to your catkin workspace (for example `~/catkin_ws/`):
+Clone the repository to your ros2 workspace (for example `~/ros2_ws/`):
 ```
-cd ~/catkin_ws/src/
-git clone https://github.com/HKUST-Aerial-Robotics/gnss_comm.git
+cd ~/ros2_ws/src/
+git clone
 ```
 Then build the package with:
 ```
-cd ~/catkin_ws/
-catkin_make
-source ~/catkin_ws/devel/setup.bash
+cd ~/ros2_ws/
+colcon build
 ```
 If you encounter any problem during the building of *gnss_comm*, try with docker in [the next section](#docker_section).
 
 ## 3. <a name="docker_section"></a>Docker Support
-To simplify the building process, we add docker in our code. Docker is like a sandbox so it can isolate our code from your local environment. To run with docker, first make sure [ros](http://wiki.ros.org/ROS/Installation) and [docker](https://docs.docker.com/get-docker/) are installed on your machine. Then add your account to `docker` group by `sudo usermod -aG docker $USER`. **Relaunch the terminal or logout and re-login if you get `Permission denied` error**, type:
-```
-cd ~/catkin_ws/src/gnss_comm/docker
-make build
-```
-The docker image `gnss_comm:latest` should be successfully built after a while. Then you can check all available docker images in your local machine by `docker image ls` command.
+TODO
 
 ## 4. Acknowledgements
 Many of the definitions and utility functions in this package are adapted from [RTKLIB](http://www.rtklib.com/).

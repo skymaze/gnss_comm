@@ -1,62 +1,51 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(gnss_comm)
 
-set(CMAKE_BUILD_TYPE "release")
-set(CMAKE_CXX_FLAGS "-std=c++11 ")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -fPIC")
+find_package(rclpy REQUIRED)
+find_package(gnss_interfaces REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(ament_cmake REQUIRED)
 
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
-  message_generation
-)
+set(INCLUDE_DIRS include ${rclpy_INCLUDE_DIRS} ${gnss_interfaces_INCLUDE_DIRS}
+  ${rclcpp_INCLUDE_DIRS} ${ament_cmake_INCLUDE_DIRS})
+include_directories(${INCLUDE_DIRS})
 
-file(GLOB_RECURSE message_files ${PROJECT_SOURCE_DIR}/msg/*.msg)
-add_message_files(FILES 
-    GnssTimeMsg.msg
-    GnssEphemMsg.msg
-    GnssGloEphemMsg.msg
-    GnssMeasMsg.msg
-    GnssObsMsg.msg
-    GnssBestXYZMsg.msg
-    GnssPVTSolnMsg.msg
-    GnssSvsMsg.msg
-    GnssTimePulseInfoMsg.msg
-    StampedFloat64Array.msg
-)
+set(LIBRARY_DIRS ${rclpy_LIBRARY_DIRS} ${gnss_interfaces_LIBRARY_DIRS}
+  ${rclcpp_LIBRARY_DIRS} ${ament_cmake_LIBRARY_DIRS})
 
-generate_messages(
-  DEPENDENCIES std_msgs
-)
+link_directories(${LIBRARY_DIRS})
 
-catkin_package(
-  CATKIN_DEPENDS message_runtime
-)
-
-catkin_package(
-    INCLUDE_DIRS include
-    LIBRARIES ${PROJECT_NAME}
-    CATKIN_DEPENDS roscpp std_msgs message_generation
-    DEPENDS
-)
+set(LIBS ${rclpy_LIBRARIES} ${gnss_interfaces_LIBRARIES} ${rclcpp_LIBRARIES}
+  ${ament_cmake_LIBRARIES})
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 find_package(Eigen3 REQUIRED)
 find_package(Glog REQUIRED)
-include_directories(
-  ${EIGEN3_INCLUDE_DIR}
-  ${GLOG_INCLUDE_DIR}
-  ${catkin_INCLUDE_DIRS}
-  ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/
-)
 
 file(GLOB_RECURSE source_files ${PROJECT_SOURCE_DIR}/src/*.cpp)
 add_library(${PROJECT_NAME} ${source_files})
-target_include_directories(${PROJECT_NAME} PUBLIC
-  ${EIGEN3_INCLUDE_DIR}
-  ${catkin_INCLUDE_DIRS}
-  ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/
-)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GLOG_LIBRARIES})
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_generate_messages_cpp)
+target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN3_INCLUDE_DIR} ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME})
+
+target_link_libraries(${PROJECT_NAME} ${LIBS} ${GLOG_LIBRARIES})
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION include/${PROJECT_NAME}
+  FILES_MATCHING
+  PATTERN "*.hpp")
+
+install(TARGETS ${PROJECT_NAME}
+  ARCHIVE
+  DESTINATION lib
+  LIBRARY
+  DESTINATION lib
+  RUNTIME
+  DESTINATION lib/${PROJECT_NAME})
+
+ament_export_dependencies(rclpy)
+ament_export_dependencies(gnss_interfaces)
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(ament_cmake)
+ament_export_include_directories(${INCLUDE_DIRS})
+ament_export_libraries(${PROJECT_NAME} ${LIBS})
+
+ament_package()
